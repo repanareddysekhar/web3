@@ -44,10 +44,12 @@ export const callCounter = async(parentAccount: Keypair) => {
     const connection = new Connection("http://127.0.0.1:8899", "confirmed");
 
     await airdrop(parentAccount.publicKey, 2);
-    const dataAccount = createDataAccount(connection, parentAccount);
+    // const dataAccount = createDataAccount(connection, parentAccount);
+    const dataAccount = new PublicKey("Bcmj9BR9xKGXDbRPtWVLwE58ge2EvUKt6tBguaGeMUjP");
+
 
     const instruction = new TransactionInstruction({
-        keys: [{pubkey: (await dataAccount).publicKey, isSigner: false, isWritable: true}],
+        keys: [{pubkey: (await dataAccount), isSigner: false, isWritable: true}],
         programId: new PublicKey(CONTRACT_PROGRAM_ID),
         data: Buffer.alloc(1),
     });
@@ -60,7 +62,7 @@ export const callCounter = async(parentAccount: Keypair) => {
 
 
     // Read data
-    const accountInfo = await connection.getAccountInfo((await dataAccount).publicKey);
+    const accountInfo = await connection.getAccountInfo((await dataAccount));
 
     const greeting = borsh.deserialize(
         GreetingSchema,
@@ -69,7 +71,7 @@ export const callCounter = async(parentAccount: Keypair) => {
     );
 
     console.log(
-        (await dataAccount).publicKey.toBase58(),
+        (await dataAccount).toBase58(),
         'has been greeted',
         greeting.counter,
         'time(s)',
